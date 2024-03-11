@@ -35,7 +35,7 @@ const gameBoard = (function () {
       console.log(`Its a draw!`);
     }
   };
-  return { placeMarker, determineOutcome };
+  return { placeMarker };
 })();
 
 const player = (name, marker) => {
