@@ -1,62 +1,41 @@
 const gameBoard = (function () {
   const board = [];
-  const rows = 3;
-  const columns = 3;
 
   const placeMarker = (player, position) => {
     board[position] = player.getMarker();
-    checkWinner(player);
-    console.log(board);
+    determineOutcome(player);
   };
 
-  const checkWinner = (player) => {
-    let i = 0;
-    let j = 0;
-    let rowIndex = 0;
-    let columnIndex = 0;
+  const checkWinningCombination = () => {
+    const winConditions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+      [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+      [0, 4, 8], [2, 4, 6], // Diagonals
+    ];
 
-    // Checking the diagonal win condition
-    if (
-      (board[0] === board[4] && board[0] === board[8] && board[0] !== undefined) ||
-      (board[2] === board[4] && board[2] === board[6] && board[2] !== undefined)
-    ) {
-      const name = player.getName();
-      console.log(`${name} has won the game!`); 
-    } else {
-      
-      // Checking the row win condition
-      while (i < rows) {
-        if (
-          board[rowIndex] === board[rowIndex + 1] &&
-          board[rowIndex] === board[rowIndex + 2] &&
-          board[rowIndex] !== undefined
-        ) {
-          const name = player.getName();
-          console.log(`${name} has won the game!`);
-          break;
-        }
-
-        i++;
-        rowIndex = i * 3;
-      }
-
-      // Checking the column win condition
-      while (j < columns) {
-        if (
-          board[columnIndex] === board[columnIndex + 3] &&
-          board[columnIndex] === board[columnIndex + 6] &&
-          board[columnIndex] !== undefined
-        ) {
-          const name = player.getName();
-          console.log(`${name} has won the game!`);
-          break;
-        }
-        j++;
-        columnIndex = j;
+    for (const winningGroup of winConditions) {
+      const marker = board[winningGroup[0]];
+      if (
+        marker !== undefined &&
+        winningGroup.every((index) => board[index] === marker)
+      ) {
+        return true;
       }
     }
+    return false;
   };
-  return { placeMarker, checkWinner };
+
+  const determineOutcome = (player) => {
+    const playerName = player.getName();
+    const isBoardFull = board.slice(0, 8).every((item) => item !== undefined);
+
+    if (checkWinningCombination()) {
+      console.log(`${playerName} has won the game!`);
+    } else if (isBoardFull) {
+      console.log(`Its a draw!`);
+    }
+  };
+  return { placeMarker, determineOutcome };
 })();
 
 const player = (name, marker) => {
