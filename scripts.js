@@ -1,9 +1,23 @@
+const player = (name, marker) => {
+  let score = 0;
+  let playerMarker = marker;
+  const playerName = name;
+
+  const getScore = () => score;
+  const getName = () => playerName;
+  const getMarker = () => playerMarker;
+
+  return { getScore, getName, getMarker };
+};
+
 const gameBoard = (function () {
   const board = [];
 
   const placeMarker = (player, position) => {
-    board[position] = player.getMarker();
-    determineOutcome(player);
+    if (board[position] === undefined) {
+      board[position] = player.getMarker();
+      determineOutcome(player);
+    }
   };
 
   const checkWinningCombination = () => {
@@ -37,18 +51,6 @@ const gameBoard = (function () {
   };
   return { placeMarker };
 })();
-
-const player = (name, marker) => {
-  let score = 0;
-  let playerMarker = marker;
-  const playerName = name;
-
-  const getScore = () => score;
-  const getName = () => playerName;
-  const getMarker = () => playerMarker;
-
-  return { getScore, getName, getMarker };
-};
 
 const displayController = (function () {
   return {};
