@@ -16,8 +16,6 @@ const gameBoard = (function () {
   const placeMarker = (player, position) => {
     if (board[position] === null) {
       board[position] = player.getMarker();
-      console.log(board);
-
       determineOutcome(player);
     }
   };
@@ -58,6 +56,10 @@ const gameBoard = (function () {
 })();
 
 const displayController = (function () {
+  const displayMarker = (player, event) => {
+    // element = document.querySelector(event.target)
+    // element.textContent = player.playerMarker;
+  }
   return {};
 })();
 
