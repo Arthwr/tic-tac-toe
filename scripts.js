@@ -11,16 +11,19 @@ const player = (name, marker) => {
 };
 
 const gameBoard = (function () {
-  const board = [];
+  const board = new Array(9).fill(null);
 
   const placeMarker = (player, position) => {
-    if (board[position] === undefined) {
+    if (board[position] === null) {
       board[position] = player.getMarker();
+      console.log(board);
+
       determineOutcome(player);
     }
   };
 
   const checkWinningCombination = () => {
+    // prettier-ignore
     const winConditions = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
       [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
@@ -30,7 +33,7 @@ const gameBoard = (function () {
     for (const winningGroup of winConditions) {
       const marker = board[winningGroup[0]];
       if (
-        marker !== undefined &&
+        marker !== null &&
         winningGroup.every((index) => board[index] === marker)
       ) {
         return true;
@@ -41,15 +44,17 @@ const gameBoard = (function () {
 
   const determineOutcome = (player) => {
     const playerName = player.getName();
-    const isBoardFull = board.slice(0, 8).every((item) => item !== undefined);
 
     if (checkWinningCombination()) {
       console.log(`${playerName} has won the game!`);
-    } else if (isBoardFull) {
-      console.log(`Its a draw!`);
+    } else {
+      const isBoardFull = board.every((item) => item !== null);
+      if (isBoardFull) {
+        console.log(`It's a draw!`);
+      }
     }
   };
-  return { placeMarker };
+  return { placeMarker, board };
 })();
 
 const displayController = (function () {
