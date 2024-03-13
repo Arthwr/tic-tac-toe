@@ -1,3 +1,5 @@
+const players = {};
+
 const player = (name, marker) => {
   let score = 0;
   let playerMarker = marker;
@@ -8,9 +10,24 @@ const player = (name, marker) => {
   const getMarker = () => playerMarker;
 
   return { getScore, getName, getMarker };
+};  
+
+const initializeForm = () => {
+  const form = document.querySelector("form");
+  const formButton = document.querySelector("form > button");
+
+  const handlePlayersFormSubmission = (event) => {
+    event.preventDefault();
+    let name1 = form.elements["player1"].value;
+    let name2 = form.elements["player2"].value; 
+    players.player1 = player(name1, "x");
+    players.player2 = player(name2, "o");
+  };
+
+  formButton.addEventListener("click", handlePlayersFormSubmission);
 };
 
-const gameBoard = (function () {
+const gameBoardController = (function () {
   const board = new Array(9).fill(null);
 
   const placeMarker = (player, position) => {
@@ -52,16 +69,31 @@ const gameBoard = (function () {
       }
     }
   };
-  return { placeMarker, board };
+
+  return { placeMarker };
 })();
 
 const displayController = (function () {
-  const displayMarker = (player, event) => {
-    // element = document.querySelector(event.target)
-    // element.textContent = player.playerMarker;
-  }
+  const boardElement = document.querySelector(".grid-container");
+
+  const renderMarker = (element) => {
+    element.textContent = "";
+  };
+
+  const clickHandlerBoard = (event) => {
+    const element = event.target;
+    playRound();
+    renderMarker(element);
+  };
+  boardElement.addEventListener("click", clickHandlerBoard);
   return {};
 })();
 
-const player1 = player("John", "x");
-const player2 = player("Mike", "o");
+initializeForm();
+
+//  To make that function
+// const playRound = () => {
+//   const activePlayer = player.getActivePlayer();
+//   placeMarker(activePlayer, cellIndex);
+// };
+// Handling form submission for new players
