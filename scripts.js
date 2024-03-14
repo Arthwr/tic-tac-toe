@@ -10,30 +10,38 @@ const player = (name, marker) => {
   const getMarker = () => playerMarker;
 
   return { getScore, getName, getMarker };
-};  
-
-const initializeForm = () => {
-  const form = document.querySelector("form");
-  const formButton = document.querySelector("form > button");
-
-  const handlePlayersFormSubmission = (event) => {
-    event.preventDefault();
-    let name1 = form.elements["player1"].value;
-    let name2 = form.elements["player2"].value; 
-    players.player1 = player(name1, "x");
-    players.player2 = player(name2, "o");
-  };
-
-  formButton.addEventListener("click", handlePlayersFormSubmission);
 };
 
 const gameBoardController = (function () {
   const board = new Array(9).fill(null);
 
+  let activePlayer;
+
+  const initializePlayers = (playerName1, playerName2) => {
+    players.player1 = player(playerName1, "x");
+    players.player2 = player(playerName2, "o");
+    activePlayer = players.player1;
+  };
+
+  const getActivePlayer = () => activePlayer;
+
+  const switchPlayerTurn = () => {
+    activePlayer =
+      activePlayer === players.player1 ? players.player2 : players.player1;
+  };
+
+  const playRound = (index) => {
+    const currentPlayer = getActivePlayer();
+    placeMarker(currentPlayer, index);
+    determineOutcome(currentPlayer);
+    switchPlayerTurn();
+    return currentPlayer.getMarker();
+  };
+
   const placeMarker = (player, position) => {
     if (board[position] === null) {
+      let marker = player.getMarker();
       board[position] = player.getMarker();
-      determineOutcome(player);
     }
   };
 
@@ -49,7 +57,7 @@ const gameBoardController = (function () {
       const marker = board[winningGroup[0]];
       if (
         marker !== null &&
-        winningGroup.every((index) => board[index] === marker)
+        winningGroup.every((cellIndex) => board[cellIndex] === marker)
       ) {
         return true;
       }
@@ -70,30 +78,33 @@ const gameBoardController = (function () {
     }
   };
 
-  return { placeMarker };
+  return { playRound, initializePlayers, board };
 })();
 
 const displayController = (function () {
+  const form = document.querySelector("form");
+  const formButton = document.querySelector("form > button");
   const boardElement = document.querySelector(".grid-container");
 
-  const renderMarker = (element) => {
-    element.textContent = "";
+  const handlePlayersFormSubmission = (event) => {
+    event.preventDefault();
+    let name1 = form.elements["player1"].value;
+    let name2 = form.elements["player2"].value;
+    gameBoardController.initializePlayers(name1, name2);
+  };
+
+  formButton.addEventListener("click", handlePlayersFormSubmission);
+
+  const renderMarker = (element, playerMarker) => {
+    element.textContent = playerMarker;
   };
 
   const clickHandlerBoard = (event) => {
     const element = event.target;
-    playRound();
-    renderMarker(element);
+    const cellIndex = event.target.dataset.index;
+    const currentPlayerMarker = gameBoardController.playRound(cellIndex);
+    renderMarker(element, currentPlayerMarker);
   };
   boardElement.addEventListener("click", clickHandlerBoard);
   return {};
 })();
-
-initializeForm();
-
-//  To make that function
-// const playRound = () => {
-//   const activePlayer = player.getActivePlayer();
-//   placeMarker(activePlayer, cellIndex);
-// };
-// Handling form submission for new players
