@@ -40,7 +40,6 @@ const gameBoardController = (function () {
 
   const placeMarker = (player, position) => {
     if (board[position] === null) {
-      let marker = player.getMarker();
       board[position] = player.getMarker();
     }
   };
@@ -78,7 +77,7 @@ const gameBoardController = (function () {
     }
   };
 
-  return { playRound, initializePlayers, board };
+  return { playRound, initializePlayers };
 })();
 
 const displayController = (function () {
@@ -106,5 +105,4 @@ const displayController = (function () {
     renderMarker(element, currentPlayerMarker);
   };
   boardElement.addEventListener("click", clickHandlerBoard);
-  return {};
 })();
