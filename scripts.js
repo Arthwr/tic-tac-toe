@@ -126,8 +126,10 @@ const displayController = (function () {
   };
 
   const updateScreen = (element, playerMarker, playerName) => {
-    element.textContent = playerMarker;
-    updateTurnMsg(playerName);
+    if (element.textContent !== "x" && element.textContent !== "o") {
+      element.textContent = playerMarker;
+      updateTurnMsg(playerName);
+    }
   };
 
   const clickHandlerBoard = (event) => {
@@ -144,3 +146,5 @@ const displayController = (function () {
   };
   boardElement.addEventListener("click", clickHandlerBoard);
 })();
+
+// Prevent replacing existing marker
