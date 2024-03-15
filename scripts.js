@@ -23,7 +23,18 @@ const gameBoardController = (function () {
     activePlayer = players.player1;
   };
 
-  const getActivePlayer = () => activePlayer;
+  const getActivePlayer = () => {
+    return {
+      currentPlayerName: activePlayer.getName(),
+      currentPlayerMarker: activePlayer.getMarker(),
+    };
+  };
+
+  const getNextPlayerName = () => {
+    return activePlayer === players.player1
+      ? players.player2.getName()
+      : players.player1.getName();
+  };
 
   const switchPlayerTurn = () => {
     activePlayer =
@@ -31,16 +42,16 @@ const gameBoardController = (function () {
   };
 
   const playRound = (index) => {
-    const currentPlayer = getActivePlayer();
-    placeMarker(currentPlayer, index);
-    determineOutcome(currentPlayer);
+    const { currentPlayerMarker } = getActivePlayer();
+    placeMarker(currentPlayerMarker, index);
+    const winnerStatus = determineOutcome(activePlayer);
     switchPlayerTurn();
-    return currentPlayer.getMarker();
+    return winnerStatus;
   };
 
-  const placeMarker = (player, position) => {
+  const placeMarker = (playerMarker, position) => {
     if (board[position] === null) {
-      board[position] = player.getMarker();
+      board[position] = playerMarker;
     }
   };
 
@@ -68,16 +79,17 @@ const gameBoardController = (function () {
     const playerName = player.getName();
 
     if (checkWinningCombination()) {
-      console.log(`${playerName} has won the game!`);
+      return `${playerName} has won the game!`;
     } else {
       const isBoardFull = board.every((item) => item !== null);
       if (isBoardFull) {
-        console.log(`It's a draw!`);
+        return `It's a draw!`;
       }
     }
+    return null;
   };
 
-  return { playRound, initializePlayers };
+  return { playRound, initializePlayers, getActivePlayer, getNextPlayerName };
 })();
 
 const displayController = (function () {
@@ -90,19 +102,48 @@ const displayController = (function () {
     let name1 = form.elements["player1"].value;
     let name2 = form.elements["player2"].value;
     gameBoardController.initializePlayers(name1, name2);
+    updateTurnMsg(name1);
   };
 
   formButton.addEventListener("click", handlePlayersFormSubmission);
 
-  const renderMarker = (element, playerMarker) => {
-    element.textContent = playerMarker;
+  const updateWinnerMsg = (msg) => {
+    const element = document.querySelector("#result-msg");
+    element.textContent = msg;
+    if (msg !== null) {
+      updateTurnMsg("");
+    }
   };
 
+  const updateTurnMsg = (turnName) => {
+    const nextTurnDisplay = document.querySelector("#turn-msg");
+    const statusMsg = `${turnName}'s turn !`;
+    if (turnName !== "") {
+      nextTurnDisplay.textContent = statusMsg;
+    } else {
+      nextTurnDisplay.textContent = "";
+    }
+  };
+
+  const updateScreen = (element, playerMarker, playerName) => {
+    element.textContent = playerMarker;
+    updateTurnMsg(playerName);
+  };
+
+  // prettier-ignore
   const clickHandlerBoard = (event) => {
     const element = event.target;
     const cellIndex = event.target.dataset.index;
-    const currentPlayerMarker = gameBoardController.playRound(cellIndex);
-    renderMarker(element, currentPlayerMarker);
+    const nextPlayerName = gameBoardController.getNextPlayerName();     
+    const {currentPlayerMarker} = gameBoardController.getActivePlayer();
+    console.log(nextPlayerName);
+    updateScreen(element, currentPlayerMarker, nextPlayerName);
+    const winnerStatus = gameBoardController.playRound(cellIndex);
+    updateWinnerMsg(winnerStatus);
   };
   boardElement.addEventListener("click", clickHandlerBoard);
 })();
+
+// Fix player turn status message, should correctly show players name before switch happens;
+// The problem lies within switch turrn function and outputing name to the display controller
+// Maybe refactor player properties such as name, score, marker to be unified and act as a object return;
