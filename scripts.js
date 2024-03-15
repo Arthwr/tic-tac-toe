@@ -136,14 +136,9 @@ const displayController = (function () {
     const cellIndex = event.target.dataset.index;
     const nextPlayerName = gameBoardController.getNextPlayerName();     
     const {currentPlayerMarker} = gameBoardController.getActivePlayer();
-    console.log(nextPlayerName);
     updateScreen(element, currentPlayerMarker, nextPlayerName);
     const winnerStatus = gameBoardController.playRound(cellIndex);
     updateWinnerMsg(winnerStatus);
   };
   boardElement.addEventListener("click", clickHandlerBoard);
 })();
-
-// Fix player turn status message, should correctly show players name before switch happens;
-// The problem lies within switch turrn function and outputing name to the display controller
-// Maybe refactor player properties such as name, score, marker to be unified and act as a object return;
