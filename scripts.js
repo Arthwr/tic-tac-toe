@@ -130,15 +130,17 @@ const displayController = (function () {
     updateTurnMsg(playerName);
   };
 
-  // prettier-ignore
   const clickHandlerBoard = (event) => {
     const element = event.target;
-    const cellIndex = event.target.dataset.index;
-    const nextPlayerName = gameBoardController.getNextPlayerName();     
-    const {currentPlayerMarker} = gameBoardController.getActivePlayer();
-    updateScreen(element, currentPlayerMarker, nextPlayerName);
-    const winnerStatus = gameBoardController.playRound(cellIndex);
-    updateWinnerMsg(winnerStatus);
+
+    if (element.dataset.index !== undefined) {
+      const cellIndex = event.target.dataset.index;
+      const nextPlayerName = gameBoardController.getNextPlayerName();
+      const { currentPlayerMarker } = gameBoardController.getActivePlayer();
+      updateScreen(element, currentPlayerMarker, nextPlayerName);
+      const winnerStatus = gameBoardController.playRound(cellIndex);
+      updateWinnerMsg(winnerStatus);
+    }
   };
   boardElement.addEventListener("click", clickHandlerBoard);
 })();
