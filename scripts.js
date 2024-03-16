@@ -1,15 +1,13 @@
 const players = {};
 
 const player = (name, marker) => {
-  let score = 0;
   let playerMarker = marker;
   const playerName = name;
 
-  const getScore = () => score;
   const getName = () => playerName;
   const getMarker = () => playerMarker;
 
-  return { getScore, getName, getMarker };
+  return { getName, getMarker };
 };
 
 const gameBoardController = (function () {
@@ -94,6 +92,7 @@ const gameBoardController = (function () {
     const playerName = player.getName();
 
     if (checkWinningCombination()) {
+      player.incrementScore();
       return `${playerName} has won the game!`;
     } else {
       const isBoardFull = board.every((item) => item !== null);
@@ -180,6 +179,7 @@ const displayController = (function () {
 
   const clickHandlerBoard = (event) => {
     const element = event.target;
+
     if (gameBoardController.isGameEnded()) {
       return;
     } else {
