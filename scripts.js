@@ -92,7 +92,6 @@ const gameBoardController = (function () {
     const playerName = player.getName();
 
     if (checkWinningCombination()) {
-      player.incrementScore();
       return `${playerName} has won the game!`;
     } else {
       const isBoardFull = board.every((item) => item !== null);
