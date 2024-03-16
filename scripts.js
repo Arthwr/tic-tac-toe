@@ -13,7 +13,7 @@ const player = (name, marker) => {
 };
 
 const gameBoardController = (function () {
-  const board = new Array(9).fill(null);  
+  const board = new Array(9).fill(null);
 
   let activePlayer;
   let gameEnded = true;
@@ -28,6 +28,12 @@ const gameBoardController = (function () {
   const isGameEnded = () => gameEnded;
 
   const endGame = () => (gameEnded = true);
+
+  const resetGame = () => {
+    board.fill(null);
+    activePlayer = players.player1;
+    gameEnded = true;
+  };
 
   const getActivePlayer = () => {
     return {
@@ -104,6 +110,7 @@ const gameBoardController = (function () {
     getActivePlayer,
     getNextPlayerName,
     isGameEnded,
+    resetGame,
   };
 })();
 
@@ -111,6 +118,7 @@ const displayController = (function () {
   const form = document.querySelector("form");
   const formButton = document.querySelector("form > button");
   const boardElement = document.querySelector(".grid-container");
+  const resetButton = document.querySelector("#reset-btn");
 
   const handlePlayersFormSubmission = (event) => {
     event.preventDefault();
@@ -129,6 +137,21 @@ const displayController = (function () {
   };
 
   formButton.addEventListener("click", handlePlayersFormSubmission);
+
+  const resetGame = () => {
+    form.reset();
+
+    const cells = document.querySelectorAll(".grid-container > div");
+    cells.forEach((cell) => {
+      cell.textContent = "";
+    });
+    updateTurnMsg("");
+    updateWinnerMsg("");
+    // Reset game state
+    gameBoardController.resetGame();
+  };
+
+  resetButton.addEventListener("click", resetGame);
 
   const updateWinnerMsg = (msg) => {
     const element = document.querySelector("#result-msg");
