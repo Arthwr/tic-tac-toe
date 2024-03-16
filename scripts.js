@@ -16,12 +16,16 @@ const gameBoardController = (function () {
   const board = new Array(9).fill(null);
 
   let activePlayer;
+  let gameStarted = false;
 
   const initializePlayers = (playerName1, playerName2) => {
     players.player1 = player(playerName1, "x");
     players.player2 = player(playerName2, "o");
     activePlayer = players.player1;
+    gameStarted = true;
   };
+
+  const isGameStarted = () => gameStarted;
 
   const getActivePlayer = () => {
     return {
@@ -89,7 +93,13 @@ const gameBoardController = (function () {
     return null;
   };
 
-  return { playRound, initializePlayers, getActivePlayer, getNextPlayerName };
+  return {
+    playRound,
+    initializePlayers,
+    getActivePlayer,
+    getNextPlayerName,
+    isGameStarted,
+  };
 })();
 
 const displayController = (function () {
@@ -142,14 +152,17 @@ const displayController = (function () {
 
   const clickHandlerBoard = (event) => {
     const element = event.target;
-
-    if (element.dataset.index !== undefined) {
-      const cellIndex = event.target.dataset.index;
-      const nextPlayerName = gameBoardController.getNextPlayerName();
-      const { currentPlayerMarker } = gameBoardController.getActivePlayer();
-      updateScreen(element, currentPlayerMarker, nextPlayerName);
-      const winnerStatus = gameBoardController.playRound(cellIndex);
-      updateWinnerMsg(winnerStatus);
+    if (!gameBoardController.isGameStarted()) {
+      return;
+    } else {
+      if (element.dataset.index !== undefined) {
+        const cellIndex = event.target.dataset.index;
+        const nextPlayerName = gameBoardController.getNextPlayerName();
+        const { currentPlayerMarker } = gameBoardController.getActivePlayer();
+        updateScreen(element, currentPlayerMarker, nextPlayerName);
+        const winnerStatus = gameBoardController.playRound(cellIndex);
+        updateWinnerMsg(winnerStatus);
+      }
     }
   };
   boardElement.addEventListener("click", clickHandlerBoard);
