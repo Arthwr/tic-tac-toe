@@ -99,10 +99,18 @@ const displayController = (function () {
 
   const handlePlayersFormSubmission = (event) => {
     event.preventDefault();
-    let name1 = form.elements["player1"].value;
-    let name2 = form.elements["player2"].value;
-    gameBoardController.initializePlayers(name1, name2);
-    updateTurnMsg(name1);
+    let name1 = form.elements["player1"].value.trim();
+    let name2 = form.elements["player2"].value.trim();
+    if (name1 !== "" && name2 !== "") {
+      if (name1 === name2) {
+        updateTurnMsg("", "Player 1 and Player 2 names must be different");
+      } else {
+        gameBoardController.initializePlayers(name1, name2);
+        updateTurnMsg(name1);
+      }
+    } else {
+      updateTurnMsg("", "Please enter player 1 and player 2 form");
+    }
   };
 
   formButton.addEventListener("click", handlePlayersFormSubmission);
@@ -115,13 +123,13 @@ const displayController = (function () {
     }
   };
 
-  const updateTurnMsg = (turnName) => {
+  const updateTurnMsg = (turnName, msg = "") => {
     const nextTurnDisplay = document.querySelector("#turn-msg");
     const statusMsg = `${turnName}'s turn !`;
     if (turnName !== "") {
       nextTurnDisplay.textContent = statusMsg;
     } else {
-      nextTurnDisplay.textContent = "";
+      nextTurnDisplay.textContent = msg;
     }
   };
 
@@ -147,4 +155,6 @@ const displayController = (function () {
   boardElement.addEventListener("click", clickHandlerBoard);
 })();
 
-// Prevent replacing existing marker
+// Stop game interaction with DOM on game result (either win announe or draw);
+// Stop interaction with DOM until form submitted;
+// Stop form submission until game finish;
