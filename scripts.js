@@ -13,19 +13,21 @@ const player = (name, marker) => {
 };
 
 const gameBoardController = (function () {
-  const board = new Array(9).fill(null);
+  const board = new Array(9).fill(null);  
 
   let activePlayer;
-  let gameStarted = false;
+  let gameEnded = true;
 
   const initializePlayers = (playerName1, playerName2) => {
     players.player1 = player(playerName1, "x");
     players.player2 = player(playerName2, "o");
     activePlayer = players.player1;
-    gameStarted = true;
+    gameEnded = false;
   };
 
-  const isGameStarted = () => gameStarted;
+  const isGameEnded = () => gameEnded;
+
+  const endGame = () => (gameEnded = true);
 
   const getActivePlayer = () => {
     return {
@@ -49,6 +51,9 @@ const gameBoardController = (function () {
     const { currentPlayerMarker } = getActivePlayer();
     placeMarker(currentPlayerMarker, index);
     const winnerStatus = determineOutcome(activePlayer);
+    if (winnerStatus !== null) {
+      endGame();
+    }
     switchPlayerTurn();
     return winnerStatus;
   };
@@ -98,7 +103,7 @@ const gameBoardController = (function () {
     initializePlayers,
     getActivePlayer,
     getNextPlayerName,
-    isGameStarted,
+    isGameEnded,
   };
 })();
 
@@ -152,7 +157,7 @@ const displayController = (function () {
 
   const clickHandlerBoard = (event) => {
     const element = event.target;
-    if (!gameBoardController.isGameStarted()) {
+    if (gameBoardController.isGameEnded()) {
       return;
     } else {
       if (element.dataset.index !== undefined) {
@@ -168,6 +173,4 @@ const displayController = (function () {
   boardElement.addEventListener("click", clickHandlerBoard);
 })();
 
-// Stop game interaction with DOM on game result (either win announe or draw);
-// Stop interaction with DOM until form submitted;
 // Stop form submission until game finish;
